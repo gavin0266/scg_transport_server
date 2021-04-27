@@ -3,11 +3,38 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var mongoose = require("mongoose");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+var mongoUri = process.env.MONGO_URI;
+
+console.log(mongoUri);
+
 var app = express();
+
+const options = {
+  useNewUrlParser: true
+};
+
+// Function to connect to the database
+const conn = () => {
+  mongoose.connect(
+    mongoUri,
+    options
+  );
+};
+// Call it to connect
+conn();
+
+const db = mongoose.connection;
+db.on("error", err => {
+  console.log("There was a problem connecting to mongo: ", err);
+  console.log("Trying again");
+  setTimeout(() => conn(), 5000);
+});
+db.once("open", () => console.log("Successfully connected to mongo"));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
