@@ -4,6 +4,10 @@ const MongooseSequence = require('mongoose-sequence')(mongoose);
 
 const { Schema } = mongoose;
 
+const logisticsSchema = require('../Logistic/schema');
+
+const scaleSchema = require('../Scale/schema');
+
 const bookingSchema = new Schema({
     bookingId: {
         type: Number,
@@ -13,6 +17,15 @@ const bookingSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+    },
+    productType: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum : ['Pending', 'Submitted', 'Approved', 'Rejected', 'Completed'],
+        default: 'Pending'
     },
     bookingDate: {
         type: Date,
@@ -27,8 +40,19 @@ const bookingSchema = new Schema({
         default: () => 1,
         required: true
     },
-}, { timestamps: true })
+    logistic: {
+        type: logisticsSchema,
+        required: false,
+    },
+    scale: {
+        type: scaleSchema,
+        required: false,
+    },
+
+}, { timestamps: true, toJSON: {getters: true}, toObject: {getters: true} })
 
 bookingSchema.plugin(MongooseSequence, {inc_field: 'bookingId'});
+
+
 
 module.exports = Booking = mongoose.model('Booking', bookingSchema);
