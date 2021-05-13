@@ -4,12 +4,25 @@ const { parse } = require('date-fns');
 
 
 module.exports = {
-    addBooking: async (orgName, productType, bookingDate, transportDate, repeat) => {
+    addBooking: async (customerId, productType, bookingDate, transportDate, repeat) => {
+
+        const defaultTicket = () => ({
+            receiptId: null,
+            vehicleId: null,
+            weight: null,
+            image: null,
+        })
 
         var bookingDateObj = parse(bookingDate, 'dd/MM/yyyy', new Date());
         var transportDateObj = parse(transportDate, 'dd/MM/yyyy', new Date());
 
-        return BookingService.addBooking(orgName, productType, bookingDateObj, transportDateObj, repeat);
+        var tickets = [];
+
+        for (var i = repeat - 1; i >= 0; i--) {
+            tickets.push(defaultTicket());
+        }
+
+        return BookingService.addBooking(customerId, productType, bookingDateObj, transportDateObj, repeat, tickets);
     },
 
     approveBooking: async (bookingId, isApprove) => {
@@ -50,8 +63,17 @@ module.exports = {
     getAllLogisticProviders: async () => {
         return BookingService.getAllLogisticProviders();
     },
-    addScaleToBooking: async (bookingId, receiptId, vehicleId, weight, image) => {
-        return BookingService.addScaleToBooking(bookingId, receiptId, vehicleId, weight, image);
+    addCustomer: async (name) => {
+        return BookingService.addCustomer(name);
+    },
+    getAllCustomers: async () => {
+        return BookingService.getAllCustomers();
+    },
+    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image) => {
+        return BookingService.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image);
+    },
+    getBookingTicketsById: async (id) => {
+        return BookingService.getBookingTicketsById(id);
     },
 
 }

@@ -3,8 +3,8 @@ const MongooseSequence = require('mongoose-sequence')(mongoose);
 
 const { Schema } = mongoose;
 
-const logisticProviderSchema = new Schema({
-    providerId: {
+const customerSchema = new Schema({
+    customerId: {
         type: Number,
         index: true,
     },
@@ -14,6 +14,6 @@ const logisticProviderSchema = new Schema({
     }
 })
 
-logisticProviderSchema.plugin(MongooseSequence, {inc_field: 'providerId'});
+customerSchema.plugin(MongooseSequence, {inc_field: 'customerId'});
 
-module.exports = logisticProviderSchema;
+module.exports = customerSchema;

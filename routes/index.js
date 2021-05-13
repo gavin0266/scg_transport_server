@@ -13,8 +13,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/addBooking', authenticated, async (req, res, next) => {
     try {
-        const { orgName, productType, bookingDate, transportDate, repeat } = req.body;
-        const result = await BookingController.addBooking(orgName, productType, bookingDate, transportDate, repeat);
+        const { customerId, productType, bookingDate, transportDate, repeat } = req.body;
+        const result = await BookingController.addBooking(customerId, productType, bookingDate, transportDate, repeat);
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
@@ -87,8 +87,8 @@ router.post('/booking/scale/add', authenticated, async (req, res, next) => {
 
         if(!checkRole(req.user, ['admin', 'engineer'])) return res.sendStatus(401);
 
-        const { bookingId, receiptId, vehicleId, weight, image } = req.body;
-        const result = await BookingController.addScaleToBooking(bookingId, receiptId, vehicleId, weight, image);
+        const { bookingId, ticketIndex, receiptId, vehicleId, weight, image } = req.body;
+        const result = await BookingController.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image);
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
@@ -159,5 +159,41 @@ router.get('/logistic/providers', async (req, res, next) => {
         return res.status(500).json(error);
     }
 });
+
+router.post('/customer/add', authenticated, async (req, res, next) => {
+    try {
+        const { name } = req.body;
+        const result = await BookingController.addCustomer(name);
+
+        return res.status(200).json({status: '200 OK'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+router.get('/customers', async (req, res, next) => {
+    try {
+        const result = await BookingController.getAllCustomers();
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+router.get('/booking/:id/tickets', async (req, res, next) => {
+    try {
+        var bookingId = req.params.id;
+        const result = await BookingController.getBookingTicketsById(bookingId);
+
+        return res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
 
 module.exports = router;

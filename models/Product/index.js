@@ -12,7 +12,6 @@ const productSchema = new Schema({
     productName: {
         type: String,
         required: true,
-        unique: true,
     },
 
 }, { timestamps: true })

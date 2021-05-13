@@ -2,18 +2,23 @@ const Booking = require('../models/Booking');
 const Product = require('../models/Product');
 const Logistic = require('../models/Logistic');
 const LogisticProvider = require('../models/LogisticProvider');
+const Customer = require('../models/Customer');
 const Scale = require('../models/Scale');
 
 
 
 module.exports = {
-    addBooking: async (orgName, productType, bookingDate, transportDate, repeat) => {
+    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, tickets) => {
+
+        const customer = await Customer.findOne( { customerId: customerId } ) 
+
         const booking = new Booking({
-            orgName: orgName,
+            customer: customer,
             productType: productType,
             bookingDate: bookingDate,
             transportDate: transportDate,
             repeat: repeat,
+            tickets: tickets,
         })
 
         return await booking.save();
@@ -91,16 +96,36 @@ module.exports = {
         return query.lean().exec();
     },
 
-    addScaleToBooking: async (bookingId, receiptId, vehicleId, weight, image) => {
+    addCustomer: async (name) => {
+        const customer = new Customer({ name: name })
+
+        return await customer.save();
+    },
+
+    getAllCustomers: async () => {
+        var query = Customer.find();
+        return query;
+    },
+
+    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image) => {
         const booking = await Booking.findOne( { bookingId: bookingId });
-        const scale = {
-            bookingId, receiptId, vehicleId, weight, image
+        const ticket = {
+            receiptId, vehicleId, weight, image
         };
 
-        console.log(scale);
-        booking.scale = scale;
-        booking.status = 'Completed';
+        booking.tickets[ticketIndex] = ticket;
+
+        const completed = booking.tickets.every(item => item.weight > 0);
+
+        if (completed) {
+            booking.status = 'Completed';
+        }
 
         return await booking.save();
+    },
+
+    getBookingTicketsById: async (id) => {
+        var query = await Booking.findOne({ bookingId: id });
+        return query.tickets;
     },
 }

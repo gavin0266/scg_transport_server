@@ -14,7 +14,8 @@ const scaleSchema = new Schema({
         type: Number,
         required: true,
         set: num => num * 100,
-        get: num => (num / 100).toFixed(2)
+        get: num => (num / 100).toFixed(2),
+        default: () => 0,
     },
     image: {
         type: String,

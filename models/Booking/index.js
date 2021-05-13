@@ -4,19 +4,22 @@ const MongooseSequence = require('mongoose-sequence')(mongoose);
 
 const { Schema } = mongoose;
 
+const customerSchema = require('../Customer/schema');
+
 const logisticsSchema = require('../Logistic/schema');
 
 const scaleSchema = require('../Scale/schema');
+const Scale = require('../Scale');
+
 
 const bookingSchema = new Schema({
     bookingId: {
         type: Number,
         index: true,
     },
-    orgName: {
-        type: String,
+    customer: {
+        type: customerSchema,
         required: true,
-        unique: true,
     },
     productType: {
         type: String,
@@ -44,8 +47,8 @@ const bookingSchema = new Schema({
         type: logisticsSchema,
         required: false,
     },
-    scale: {
-        type: scaleSchema,
+    tickets: {
+        type: [scaleSchema],
         required: false,
     },
 
