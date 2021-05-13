@@ -3,7 +3,7 @@ const getUploadDetails = require('../services/getUploadDetails');
 
 var clientUrl = "https://scg-af-logistic.surge.sh";
 
-var debug = process.env.DEBUG;
+var debug = process.env.DEBUG == 'true';
 
 if(debug) {
     clientUrl = "http://localhost:3001";

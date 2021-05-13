@@ -12,7 +12,7 @@ var usersRouter = require('./routes/users');
 var b2Router = require('./routes/b2');
 
 
-var mongoUri = process.env.DEBUG ? process.env.DEBUG_MONGO_URI : process.env.MONGO_URI;
+var mongoUri = (process.env.DEBUG == 'true') ? process.env.DEBUG_MONGO_URI : process.env.MONGO_URI;
 
 console.log(mongoUri);
 
