@@ -1,3 +1,6 @@
+const endOfDay = require('date-fns/endOfDay');
+const startOfDay = require('date-fns/startOfDay');
+
 const Booking = require('../models/Booking');
 const Product = require('../models/Product');
 const Logistic = require('../models/Logistic');
@@ -5,10 +8,12 @@ const LogisticProvider = require('../models/LogisticProvider');
 const Customer = require('../models/Customer');
 const Scale = require('../models/Scale');
 
+const { zonedTimeToUtc } = require('date-fns-tz');
+
 
 
 module.exports = {
-    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, tickets) => {
+    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, tickets, source) => {
 
         const customer = await Customer.findOne( { customerId: customerId } ) 
 
@@ -19,6 +24,7 @@ module.exports = {
             transportDate: transportDate,
             repeat: repeat,
             tickets: tickets,
+            source: source
         })
 
         return await booking.save();
@@ -28,6 +34,37 @@ module.exports = {
         var query = Booking.find();
         return query;
     },
+
+    getBookingsByTransportDate: async (startDate, endDate) => {
+
+        
+
+        var query = Booking.find(
+            { 
+                transportDate: {
+                    $gte: startOfDay(new Date(startDate)),
+                    $lte: endOfDay(new Date(endDate))
+                } 
+            }
+        );
+        
+        return query;
+    },
+
+    getBookingsByCompletedDate: async (startDate, endDate) => {
+
+        var query = Booking.find(
+            { 
+                completedAt: {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate)
+                } 
+            }
+        );
+        return query;
+    },
+
+
 
     getBookingById: async (id) => {
         var query = Booking.findOne({ bookingId: id });
@@ -110,7 +147,7 @@ module.exports = {
     addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image) => {
         const booking = await Booking.findOne( { bookingId: bookingId });
         const ticket = {
-            receiptId, vehicleId, weight, image
+            receiptId, vehicleId, weight, image, filled: true,
         };
 
         booking.tickets[ticketIndex] = ticket;
@@ -119,6 +156,7 @@ module.exports = {
 
         if (completed) {
             booking.status = 'Completed';
+            booking.completedAt = new Date();
         }
 
         return await booking.save();

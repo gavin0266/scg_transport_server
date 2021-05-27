@@ -8,8 +8,12 @@ scg_transport_server:
   ports:
     - "9000:9000"
   environment:
-    - DEBUG=true
+    - TZ=Asia/Bangkok
+    - DEBUG=false
+    - FRONTEND=https://scg-af-logistic.surge.sh
     - DEBUG_MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/debugDatabase?retryWrites=true&w=majority
     - MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
     - B2_KEY_ID=000c0781e5ac2210000000001
     - B2_APPLICATION_KEY=K000drXGv+azfUeH8qGRiViwnFyij8A
+    - SEND_NOTIFICATION=false
+

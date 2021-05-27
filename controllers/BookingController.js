@@ -1,10 +1,12 @@
 const BookingService = require('../services/BookingService');
+const EmailService = require('../services/EmailService');
 
 const { parse } = require('date-fns');
+const { zonedTimeToUtc } = require('date-fns-tz');
 
 
 module.exports = {
-    addBooking: async (customerId, productType, bookingDate, transportDate, repeat) => {
+    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, source) => {
 
         const defaultTicket = () => ({
             receiptId: null,
@@ -22,7 +24,7 @@ module.exports = {
             tickets.push(defaultTicket());
         }
 
-        return BookingService.addBooking(customerId, productType, bookingDateObj, transportDateObj, repeat, tickets);
+        return BookingService.addBooking(customerId, productType, bookingDateObj, transportDateObj, repeat, tickets, source);
     },
 
     approveBooking: async (bookingId, isApprove) => {
@@ -37,6 +39,10 @@ module.exports = {
 
     getAllBookings: async () => {
         return BookingService.getAllBookings();
+    },
+
+    getBookingsByTransportDate: async (startDate, endDate) => {
+        return BookingService.getBookingsByTransportDate(startDate, endDate);
     },
 
     getBookingById: async (id) => {

@@ -5,6 +5,11 @@ var router = express.Router();
 
 const BookingController = require('../controllers/BookingController');
 
+const EmailController = require('../controllers/EmailController');
+
+
+
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -13,8 +18,10 @@ router.get('/', function(req, res, next) {
 
 router.post('/addBooking', authenticated, async (req, res, next) => {
     try {
-        const { customerId, productType, bookingDate, transportDate, repeat } = req.body;
-        const result = await BookingController.addBooking(customerId, productType, bookingDate, transportDate, repeat);
+        const { customerId, productType, bookingDate, transportDate, repeat, source } = req.body;
+        const booking = await BookingController.addBooking(customerId, productType, bookingDate, transportDate, repeat, source);
+
+        EmailController.addBooking(booking);
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
@@ -40,6 +47,16 @@ router.post('/booking/approve', authenticated, async (req, res, next) => {
 
 router.get('/bookings', authenticated, async (req, res, next) => {
     try {
+
+        if(req.query.hasOwnProperty("startDate") && req.query.hasOwnProperty("endDate")) {
+            const { startDate, endDate } = req.query;
+            const result = await BookingController.getBookingsByTransportDate(startDate, endDate);
+
+            return res.status(200).json(result);
+
+        }
+
+
         const result = await BookingController.getAllBookings();
 
         return res.status(200).json(result);
@@ -54,7 +71,6 @@ router.get('/booking/:id', authenticated, async (req, res, next) => {
 
         var bookingId = req.params.id;
 
-        console.log(bookingId);
 
         const result = await BookingController.getBookingById(bookingId);
 
@@ -194,6 +210,7 @@ router.get('/booking/:id/tickets', async (req, res, next) => {
         return res.status(500).json(error);
     }
 });
+
 
 
 module.exports = router;

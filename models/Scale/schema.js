@@ -19,6 +19,10 @@ const scaleSchema = new Schema({
     },
     image: {
         type: String,
+    },
+    filled: {
+        type: Boolean,
+        default: () => false,
     }
 }, { timestamps: true, toJSON: {getters: true}, toObject: {getters: true} })
 

@@ -2,6 +2,8 @@
 const mongoose = require('mongoose');
 const MongooseSequence = require('mongoose-sequence')(mongoose);
 
+const timeZone = require('mongoose-timezone');
+
 const { Schema } = mongoose;
 
 const customerSchema = require('../Customer/schema');
@@ -43,6 +45,11 @@ const bookingSchema = new Schema({
         default: () => 1,
         required: true
     },
+    source: {
+        type: String,
+        default: () => null,
+        required: false,
+    },
     logistic: {
         type: logisticsSchema,
         required: false,
@@ -51,10 +58,15 @@ const bookingSchema = new Schema({
         type: [scaleSchema],
         required: false,
     },
+    completedAt: {
+        type: Date,
+        required: false,
+    }
 
 }, { timestamps: true, toJSON: {getters: true}, toObject: {getters: true} })
 
 bookingSchema.plugin(MongooseSequence, {inc_field: 'bookingId'});
+bookingSchema.plugin(timeZone, { paths: ['completedAt'] });
 
 
 
