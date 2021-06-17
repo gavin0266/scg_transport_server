@@ -1,5 +1,5 @@
 var express = require('express');
-var { authenticated, checkRole } = require('../security');
+var { authenticated, checkRole, getUserEmail } = require('../security');
 
 var router = express.Router();
 
@@ -18,8 +18,14 @@ router.get('/', function(req, res, next) {
 
 router.post('/addBooking', authenticated, async (req, res, next) => {
     try {
-        const { customerId, productType, bookingDate, transportDate, repeat, source } = req.body;
-        const booking = await BookingController.addBooking(customerId, productType, bookingDate, transportDate, repeat, source);
+        const { customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks } = req.body;
+        
+        const addedBy = {
+            email: getUserEmail(req.user),
+            userId: req.user.sub
+        }
+
+        const booking = await BookingController.addBooking(addedBy, customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks);
 
         EmailController.addBooking(booking);
 
@@ -38,6 +44,8 @@ router.post('/booking/approve', authenticated, async (req, res, next) => {
         const { bookingId, isApproved } = req.body;
         const result = await BookingController.approveBooking(bookingId, isApproved);
 
+        EmailController.isApproved(result);
+
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
         console.log(error);
@@ -47,7 +55,6 @@ router.post('/booking/approve', authenticated, async (req, res, next) => {
 
 router.get('/bookings', authenticated, async (req, res, next) => {
     try {
-
         if(req.query.hasOwnProperty("startDate") && req.query.hasOwnProperty("endDate")) {
             const { startDate, endDate } = req.query;
             const result = await BookingController.getBookingsByTransportDate(startDate, endDate);
@@ -88,8 +95,15 @@ router.post('/booking/logistic/add', authenticated, async (req, res, next) => {
 
         if(!checkRole(req.user, ['admin', 'engineer'])) return res.sendStatus(401);
 
+        const addedBy = {
+            email: getUserEmail(req.user),
+            userId: req.user.sub
+        }
+
         const { bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount } = req.body;
-        const result = await BookingController.addLogisticToBooking(bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
+        const result = await BookingController.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
+
+        EmailController.addLogistics(result);
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
@@ -105,6 +119,10 @@ router.post('/booking/scale/add', authenticated, async (req, res, next) => {
 
         const { bookingId, ticketIndex, receiptId, vehicleId, weight, image } = req.body;
         const result = await BookingController.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image);
+
+        if (result.status == "Completed") {
+            EmailController.isCompleted(result);
+        }
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {

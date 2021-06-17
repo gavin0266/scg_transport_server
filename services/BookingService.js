@@ -13,7 +13,7 @@ const { zonedTimeToUtc } = require('date-fns-tz');
 
 
 module.exports = {
-    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, tickets, source) => {
+    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, tickets, source, link, fileURL, remarks, logistic) => {
 
         const customer = await Customer.findOne( { customerId: customerId } ) 
 
@@ -24,7 +24,12 @@ module.exports = {
             transportDate: transportDate,
             repeat: repeat,
             tickets: tickets,
-            source: source
+            source: source,
+            link: link,
+            fileURL: fileURL,
+            remarks: remarks,
+            logistic: logistic,
+            addedBy: { order: addedBy, logistics: null, tickets: null },
         })
 
         return await booking.save();
@@ -103,7 +108,7 @@ module.exports = {
         return await logistic.save();
     },
 
-    addLogisticToBooking: async (bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
+    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
         const booking = await Booking.findOne( { bookingId: bookingId });
         const logisticProvider = await LogisticProvider.findOne( { providerId: logisticProviderId } )
 
@@ -118,6 +123,7 @@ module.exports = {
         console.log(logistic);
         booking.logistic = logistic;
         booking.status = 'Submitted';
+        booking.addedBy.logistics = addedBy;
 
         return await booking.save();
     },

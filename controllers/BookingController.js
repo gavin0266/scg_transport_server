@@ -6,7 +6,7 @@ const { zonedTimeToUtc } = require('date-fns-tz');
 
 
 module.exports = {
-    addBooking: async (customerId, productType, bookingDate, transportDate, repeat, source) => {
+    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks) => {
 
         const defaultTicket = () => ({
             receiptId: null,
@@ -24,7 +24,12 @@ module.exports = {
             tickets.push(defaultTicket());
         }
 
-        return BookingService.addBooking(customerId, productType, bookingDateObj, transportDateObj, repeat, tickets, source);
+        const logistic = {
+            location,
+            vehicleType,
+        }
+
+        return BookingService.addBooking(addedBy, customerId, productType, bookingDateObj, transportDateObj, repeat, tickets, source, link, fileURL, remarks, logistic);
     },
 
     approveBooking: async (bookingId, isApprove) => {
@@ -60,8 +65,8 @@ module.exports = {
     addLogistic: async (logisticName, location, vehicleType, price, estimatedAmount) => {
         return BookingService.addLogistic(logisticName, location, vehicleType, price, estimatedAmount);
     },
-    addLogisticToBooking: async (bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
-        return BookingService.addLogisticToBooking(bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
+    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
+        return BookingService.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
     },
     addLogisticProvider: async (name) => {
         return BookingService.addLogisticProvider(name);

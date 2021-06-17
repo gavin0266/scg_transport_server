@@ -9,11 +9,13 @@ scg_transport_server:
     - "9000:9000"
   environment:
     - TZ=Asia/Bangkok
-    - DEBUG=false
-    - FRONTEND=https://scg-af-logistic.surge.sh
+    - DEBUG=true
+    - FRONTEND=http://localhost:3001
     - DEBUG_MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/debugDatabase?retryWrites=true&w=majority
     - MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
     - B2_KEY_ID=000c0781e5ac2210000000001
     - B2_APPLICATION_KEY=K000drXGv+azfUeH8qGRiViwnFyij8A
+    - AUTH0_CLIENT_ID=UwB3H0CzGIZ01tIIumwcABp6by8ecSH7
+    - AUTH0_CLIENT_SECRET=K_k2jlULQ6zS4dWBz-5lhHq70NMb-qpU6WqfdDanLSj5X4V5uXr5a5peTzFYKJJA
     - SEND_NOTIFICATION=false
 

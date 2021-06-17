@@ -8,7 +8,8 @@ const logisticProviderSchema = require("../LogisticProvider/schema");
 const logisticsSchema = new Schema({
     logisticProvider: {
         type: logisticProviderSchema,
-        required: true
+        required: false,
+        default: () => null,
     },
     location: {
         type: String,
@@ -20,15 +21,19 @@ const logisticsSchema = new Schema({
     },
     price: {
         type: Number,
-        required: true,
+        required: false,
         set: num => num * 100,
-        get: num => (num / 100).toFixed(2)
+        get: num => (num / 100).toFixed(2),
+        default: () => null,
+
     },
     estimatedAmount: {
         type: Number,
-        required: true,
+        required: false,
         set: num => num * 100,
-        get: num => (num / 100).toFixed(2)
+        get: num => (num / 100).toFixed(2),
+        default: () => null,
+
     }
 }, { timestamps: true, toJSON: {getters: true}, toObject: {getters: true} })
 
