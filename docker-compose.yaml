@@ -18,4 +18,6 @@ scg_transport_server:
     - AUTH0_CLIENT_ID=UwB3H0CzGIZ01tIIumwcABp6by8ecSH7
     - AUTH0_CLIENT_SECRET=K_k2jlULQ6zS4dWBz-5lhHq70NMb-qpU6WqfdDanLSj5X4V5uXr5a5peTzFYKJJA
     - SEND_NOTIFICATION=true
+    - SENDINBLUE_USER=gavin.kiwi@gmail.com
+    - SENDINBLUE_PASS=xsmtpsib-221d24d1d864237929bc214a84aab9179e9fbaa063b965c0e715979a7acfd2d1-n7ChLt6TmagFv3Mx
 
