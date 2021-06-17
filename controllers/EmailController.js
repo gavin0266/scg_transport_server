@@ -34,8 +34,10 @@ const getRecipients = async (roles) => {
 module.exports = {
     addBooking: async (booking) => {
         // console.log(booking);
+        
         const recipients = await getRecipients('admin');
 
+        // const recipients = ['gavin.kiwi@gmail.com'];
         console.log(recipients);
 
         const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;

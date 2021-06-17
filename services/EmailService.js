@@ -1,12 +1,15 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.zoho.com',
-    port: 465,
-    secure: true, //ssl
+    host: 'smtp-relay.sendinblue.com',
+    port: 587,
+    secureConnection: false, // TLS requires secureConnection to be false
     auth: {
-        user: 'scg-af-logistics@fungtammasan.com',
-        pass: 'Scg12345!'
+        user: process.env['SENDINBLUE_USER'],
+        pass: process.env['SENDINBLUE_PASS']
+    },
+    tls: {
+        ciphers:'SSLv3'
     }
 });
 
@@ -17,7 +20,7 @@ module.exports = {
         if(process.env["SEND_NOTIFICATION"] != "true") return;
 
         let mailOptions = {
-            from: '"SCG-AF-LOGISTICS" <scg-af-logistics@fungtammasan.com>', // sender address (who sends)
+            from: '"SCG-AF-LOGISTICS" <admin@scg-af-logistic.cf>', // sender address (who sends)
             to: recipients, // list of receivers (who receives)
             subject: subject, // Subject line
             html: body // html body
