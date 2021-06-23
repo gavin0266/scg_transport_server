@@ -35,88 +35,104 @@ module.exports = {
     addBooking: async (booking) => {
         // console.log(booking);
         
-        const recipients = await getRecipients('admin');
+        try {
+            const recipients = await getRecipients('admin');
 
-        // const recipients = ['gavin.kiwi@gmail.com'];
-        console.log(recipients);
+            // const recipients = ['gavin.kiwi@gmail.com'];
+            console.log(recipients);
 
-        const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
+            const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
 
-        const subjects = `SCG-AF-LOGISTICS: ได้รับ ORDER ใหม่ - ORDER ${booking.bookingId}`
+            const subjects = `SCG-AF-LOGISTICS: ได้รับ ORDER ใหม่ - ORDER ${booking.bookingId}`
 
-        const body = `<p>ได้รับ Order ใหม่ จาก <b>${booking.customer.name}</b></p> <p>ข้อมูลเพิ่มเติม: ${url}</p>`
- 
-        EmailService.sendEmail(recipients, subjects, body);
+            const body = `<p>ได้รับ Order ใหม่ จาก <b>${booking.customer.name}</b></p> <p>ข้อมูลเพิ่มเติม: ${url}</p>`
+     
+            EmailService.sendEmail(recipients, subjects, body);
+        } catch (e) {
+            console.log(e);
+        }
     },
 
     addLogistics: async (booking) => {
         // console.log(booking);
-        const recipients = await getRecipients('engineer');
+        try {
+            const recipients = await getRecipients('engineer');
 
-        console.log(recipients);
+            console.log(recipients);
 
-        const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
+            const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
 
-        const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
+            const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
 
-        const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} - รายละเอียดการขนส่ง`
+            const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} - รายละเอียดการขนส่ง`
 
-        const body = `<div>
-                            Order #${booking.bookingId} ได้รับรายละเอียดการขนส่ง <br /><br />
+            const body = `<div>
+                                Order #${booking.bookingId} ได้รับรายละเอียดการขนส่ง <br /><br />
 
-                            <a href="${approveUrl}/1">อนุมัติ</a> | <a href="${approveUrl}/0">ปฏิเสธ</a>
+                                <a href="${approveUrl}/1">อนุมัติ</a> | <a href="${approveUrl}/0">ปฏิเสธ</a>
 
-                            <br /><br />
+                                <br /><br />
 
-                            บริษัทขนส่ง: ${booking.logistic.logisticProvider.name}<br />
-                            ที่รับสินค้า: ${booking.logistic.location}<br />
-                            ชนิดรถขนส่ง: ${booking.logistic.vehicleType}<br />
-                            ค่าขนส่ง (บาท): ${booking.logistic.price}<br />
-                            นน.สุทธิโดยประมาณ (ตัน): ${booking.logistic.estimatedAmount}<br /> 
-                            <br /> 
-                            ข้อมูลเพิ่มเติม: ${url}
-                     </div>`
+                                บริษัทขนส่ง: ${booking.logistic.logisticProvider.name}<br />
+                                ที่รับสินค้า: ${booking.logistic.location}<br />
+                                ชนิดรถขนส่ง: ${booking.logistic.vehicleType}<br />
+                                ค่าขนส่ง (บาท): ${booking.logistic.price}<br />
+                                นน.สุทธิโดยประมาณ (ตัน): ${booking.logistic.estimatedAmount}<br /> 
+                                <br /> 
+                                ข้อมูลเพิ่มเติม: ${url}
+                         </div>`
 
-        EmailService.sendEmail(recipients, subjects, body);
+            EmailService.sendEmail(recipients, subjects, body);
+        } catch (e) {
+            console.log(e);
+        }
     },
 
     isApproved: async (booking) => {
-        const recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
+        try {
+            const recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
 
-        console.log(recipients);
+            console.log(recipients);
 
-        const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
+            const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
 
-        const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
+            const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
 
-        const approveText = booking.status == "Approved" ? "อนุมัติ" : "ปฏิเสธ";
+            const approveText = booking.status == "Approved" ? "อนุมัติ" : "ปฏิเสธ";
 
-        const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  ได้รับการ${approveText}`
+            const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  ได้รับการ${approveText}`
 
-        const body = `<div>Order #${booking.bookingId} ได้รับการ${approveText} <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
+            const body = `<div>Order #${booking.bookingId} ได้รับการ${approveText} <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
 
-        EmailService.sendEmail(recipients, subjects, body);
+            EmailService.sendEmail(recipients, subjects, body);
+        } catch (e) {
+            console.log(e);
+        }
     },
 
     isCompleted: async (booking) => {
-        var recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
+        try {
+            var recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
 
-        const engineerEmails = await getRecipients('engineer');
+            const engineerEmails = await getRecipients('engineer');
 
-        recipients = [...recipients, ...engineerEmails];
+            recipients = [...recipients, ...engineerEmails];
 
-        console.log(recipients);
+            console.log(recipients);
 
-        const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
+            const url = process.env['FRONTEND'] + `/booking/${booking.bookingId}`;
 
-        const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
+            const approveUrl = process.env['FRONTEND'] + `/booking/${booking.bookingId}/approve`;
 
-        const approveText = booking.status == "Approved" ? "อนุมัติ" : "ปฏิเสธ";
+            const approveText = booking.status == "Approved" ? "อนุมัติ" : "ปฏิเสธ";
 
-        const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  COMPLETED`
+            const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  COMPLETED`
 
-        const body = `<div>Order #${booking.bookingId} ได้รับการปิดงาน <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
+            const body = `<div>Order #${booking.bookingId} ได้รับการปิดงาน <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
 
-        EmailService.sendEmail(recipients, subjects, body);
+            EmailService.sendEmail(recipients, subjects, body);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
