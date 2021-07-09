@@ -36,7 +36,10 @@ module.exports = {
         // console.log(booking);
         
         try {
-            const recipients = await getRecipients('admin');
+            const adminRecipients = await getRecipients('admin');
+            const engineerRecipients = await getRecipients('engineer');
+
+            const recipients = [...adminRecipients, ...engineerRecipients, "wittavas@scg.com"];
 
             // const recipients = ['gavin.kiwi@gmail.com'];
             console.log(recipients);
@@ -56,7 +59,10 @@ module.exports = {
     addLogistics: async (booking) => {
         // console.log(booking);
         try {
-            const recipients = await getRecipients('engineer');
+            const adminRecipients = await getRecipients('admin');
+            const engineerRecipients = await getRecipients('engineer');
+
+            const recipients = [...adminRecipients, ...engineerRecipients];
 
             console.log(recipients);
 
@@ -90,7 +96,11 @@ module.exports = {
 
     isApproved: async (booking) => {
         try {
-            const recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
+            var recipients = [booking.addedBy.order.email, booking.addedBy.order.logistics];
+            const adminRecipients = await getRecipients('admin');
+            const engineerRecipients = await getRecipients('engineer');
+
+            recipients = [...recipients, ...adminRecipients, ...engineerRecipients];
 
             console.log(recipients);
 

@@ -17,7 +17,9 @@ router.get('/orders', async (req, res, next) => {
         console.log(req.query);
         const { startDate, endDate } = req.query;    
 
-        var wb = new xl.Workbook();
+        var wb = new xl.Workbook({
+            dateFormat: 'dd/mm/yy'
+        });
 
         await ExcelController.createOrders(wb, startDate, endDate);
 
