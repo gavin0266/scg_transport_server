@@ -229,6 +229,17 @@ router.get('/booking/:id/tickets', async (req, res, next) => {
     }
 });
 
+router.get('/analytics/:year/:month', async (req, res, next) => {
+    try {
+        var { year, month } = req.params;
 
+        const result = await BookingController.getNewAnalyticsData(parseInt(year), parseInt(month) - 1);
+        return res.status(200).json(result);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
 
 module.exports = router;

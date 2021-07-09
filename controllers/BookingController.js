@@ -15,7 +15,7 @@ module.exports = {
             image: null,
         })
 
-        var bookingDateObj = parse(bookingDate, 'dd/MM/yyyy', new Date());
+        var bookingDateObj = parse(booking`Date`, 'dd/MM/yyyy', new Date());
         var transportDateObj = parse(transportDate, 'dd/MM/yyyy', new Date());
 
         var tickets = [];
@@ -86,5 +86,115 @@ module.exports = {
     getBookingTicketsById: async (id) => {
         return BookingService.getBookingTicketsById(id);
     },
+    getNewAnalyticsData: async (year, month) => {
+        var firstDay = new Date(year, month, 1);
+        var lastDay = new Date(year, month+1, 1);
+
+        const data = await BookingService.getBookingsByCompletedDate(firstDay, lastDay);
+
+        const yearlyData = await BookingService.getBookingsByCompletedDate(new Date(year, 0, 1), new Date(year, 12, 1));
+
+        function getUniqueRoutes(data) {
+            var routes = {}
+            var routeCount = 0;
+
+            data.map(booking => {
+                const { source } = booking;
+                if (booking.logistic) {
+                    const { location } = booking.logistic;
+
+                    if(!routes.hasOwnProperty(source)) {
+                        routes[source] = new Set();
+                    }
+                    routes[source].add(location);
+                }
+            });
+
+            Object.keys(routes).map(function(key, index) {
+                routes[key] = Array.from(routes[key]);
+                routeCount += routes[key].length
+            });
+
+            return [routes, routeCount]
+        }
+
+        function getDestinationsFrequency(data) {
+            const destinations = data.map(booking => {
+                if(booking.logistic) {
+                    return booking.logistic.location
+                }
+            });
+
+            var occurrences = {};
+            for (var i = 0, j = destinations.length; i < j; i++) {
+               occurrences[destinations[i]] = (occurrences[destinations[i]] || 0) + 1;
+            }
+
+            return occurrences;
+        }
+
+        function getVehicleWeightsByDay(data, getAvg = false) {
+
+            const vehicleMap = {}
+
+            var totalWeight = 0;
+            var ticketCount = 0;
+
+            const vehicles = [].concat(...data.map(booking => booking.tickets.map(ticket => {
+
+                const { vehicleId, weight } = ticket;
+                const { transportDate } = booking;
+
+                console.log(vehicleId, weight, transportDate, transportDate.getDate());
+
+                if(!vehicleMap.hasOwnProperty(vehicleId)){
+                    vehicleMap[vehicleId] = new Array(new Date(year, month+1, 0).getDate()).fill(0);
+                }             
+
+                vehicleMap[vehicleId][transportDate.getDate()-1] += parseFloat(weight);
+                totalWeight += parseFloat(weight);
+                ticketCount++;
+
+            })));
+
+            if(getAvg) {
+                return [vehicleMap, totalWeight/ticketCount]
+            }
+
+            return vehicleMap;
+
+        }
+
+        function getWeightsByMonth(data) {
+            var months = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+            const tickets = data.map(booking => booking.tickets.map(ticket => {
+                months[booking.transportDate.getMonth()] += parseFloat(ticket.weight);
+
+            }));
+
+            return months;
+        }
+
+        const [trucks, weightAvg] = getVehicleWeightsByDay(data, true)
+        const [routes, routeCount] = getUniqueRoutes(data)
+
+        var analysisData = {
+            dateRange: [firstDay, lastDay],
+            fleets: [...new Set([].concat(...data.map(booking => booking.tickets.map(ticket => ticket.vehicleId))))],
+            rounds: data.map(booking => booking.tickets.length).reduce((a, b) => a + b, 0),
+            tons: data.map(booking => booking.tickets.reduce((a, b) => a + parseFloat(b.weight), 0)).reduce((a, b) => a + b, 0),
+            routes: routes,
+            routeCount: routeCount,
+            weightAvg: weightAvg,
+            destinations: getDestinationsFrequency(data),
+            trucks: trucks,
+            yearlyWeights: getWeightsByMonth(yearlyData),
+
+
+        }
+
+        return analysisData;
+    }
 
 }
