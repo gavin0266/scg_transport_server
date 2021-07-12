@@ -100,8 +100,8 @@ router.post('/booking/logistic/add', authenticated, async (req, res, next) => {
             userId: req.user.sub
         }
 
-        const { bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount } = req.body;
-        const result = await BookingController.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
+        const { bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate } = req.body;
+        const result = await BookingController.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate);
 
         EmailController.addLogistics(result);
 
@@ -117,8 +117,8 @@ router.post('/booking/scale/add', authenticated, async (req, res, next) => {
 
         if(!checkRole(req.user, ['admin', 'engineer'])) return res.sendStatus(401);
 
-        const { bookingId, ticketIndex, receiptId, vehicleId, weight, image } = req.body;
-        const result = await BookingController.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image);
+        const { bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate } = req.body;
+        const result = await BookingController.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate);
 
         if (result.status == "Completed") {
             EmailController.isCompleted(result);

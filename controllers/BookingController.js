@@ -15,7 +15,7 @@ module.exports = {
             image: null,
         })
 
-        var bookingDateObj = parse(booking`Date`, 'dd/MM/yyyy', new Date());
+        var bookingDateObj = parse(bookingDate, 'dd/MM/yyyy', new Date());
         var transportDateObj = parse(transportDate, 'dd/MM/yyyy', new Date());
 
         var tickets = [];
@@ -65,8 +65,8 @@ module.exports = {
     addLogistic: async (logisticName, location, vehicleType, price, estimatedAmount) => {
         return BookingService.addLogistic(logisticName, location, vehicleType, price, estimatedAmount);
     },
-    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
-        return BookingService.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount);
+    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate) => {
+        return BookingService.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate);
     },
     addLogisticProvider: async (name) => {
         return BookingService.addLogisticProvider(name);
@@ -80,8 +80,8 @@ module.exports = {
     getAllCustomers: async () => {
         return BookingService.getAllCustomers();
     },
-    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image) => {
-        return BookingService.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image);
+    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate) => {
+        return BookingService.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate);
     },
     getBookingTicketsById: async (id) => {
         return BookingService.getBookingTicketsById(id);

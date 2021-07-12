@@ -108,7 +108,7 @@ module.exports = {
         return await logistic.save();
     },
 
-    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount) => {
+    addLogisticToBooking: async (addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate) => {
         const booking = await Booking.findOne( { bookingId: bookingId });
         const logisticProvider = await LogisticProvider.findOne( { providerId: logisticProviderId } )
 
@@ -121,6 +121,7 @@ module.exports = {
         };
 
         console.log(logistic);
+        booking.transportDate = transportDate;
         booking.logistic = logistic;
         booking.status = 'Submitted';
         booking.addedBy.logistics = addedBy;
@@ -150,13 +151,14 @@ module.exports = {
         return query;
     },
 
-    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image) => {
+    addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate) => {
         const booking = await Booking.findOne( { bookingId: bookingId });
         const ticket = {
             receiptId, vehicleId, weight, image, filled: true,
         };
 
         booking.tickets[ticketIndex] = ticket;
+        booking.transportDate = transportDate;
 
         const completed = booking.tickets.every(item => item.weight > 0);
 
