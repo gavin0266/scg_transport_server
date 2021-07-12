@@ -99,12 +99,15 @@ module.exports = {
             var routeCount = 0;
 
             data.map(booking => {
-                const { source, customer } = booking;
-                
-                if(!routes.hasOwnProperty(source)) {
-                    routes[source] = new Set();
+                const { source } = booking;
+                if (booking.logistic) {
+                    const { location } = booking.logistic;
+
+                    if(!routes.hasOwnProperty(source)) {
+                        routes[source] = new Set();
+                    }
+                    routes[source].add(location);
                 }
-                routes[source].add(customer.name);
             });
 
             Object.keys(routes).map(function(key, index) {
@@ -116,20 +119,9 @@ module.exports = {
         }
 
         function getDestinationsFrequency(data) {
-            const destinations = data.map(booking => booking.customer.name);
-
-            var occurrences = {};
-            for (var i = 0, j = destinations.length; i < j; i++) {
-               occurrences[destinations[i]] = (occurrences[destinations[i]] || 0) + 1;
-            }
-
-            return occurrences;
-        }
-
-        function getSourceFrequency(data) {
             const destinations = data.map(booking => {
                 if(booking.logistic) {
-                    return booking.source
+                    return booking.logistic.location
                 }
             });
 
@@ -195,7 +187,6 @@ module.exports = {
             routes: routes,
             routeCount: routeCount,
             weightAvg: weightAvg,
-            sources: getSourceFrequency(data),
             destinations: getDestinationsFrequency(data),
             trucks: trucks,
             yearlyWeights: getWeightsByMonth(yearlyData),
