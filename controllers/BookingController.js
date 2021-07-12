@@ -9,7 +9,7 @@ module.exports = {
     addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks) => {
 
         const defaultTicket = () => ({
-            receiptId: null,
+            receiptId   : null,
             vehicleId: null,
             weight: null,
             image: null,
