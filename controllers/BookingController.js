@@ -15,7 +15,7 @@ module.exports = {
             image: null,
         })
 
-        var bookingDateObj = parse(booking`Date`, 'dd/MM/yyyy', new Date());
+        var bookingDateObj = parse(bookingDate, 'dd/MM/yyyy', new Date());
         var transportDateObj = parse(transportDate, 'dd/MM/yyyy', new Date());
 
         var tickets = [];
