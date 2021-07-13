@@ -103,7 +103,7 @@ router.post('/booking/logistic/add', authenticated, async (req, res, next) => {
         const { bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate } = req.body;
         const result = await BookingController.addLogisticToBooking(addedBy, bookingId, logisticProviderId, location, vehicleType, price, estimatedAmount, transportDate);
 
-        EmailController.addLogistics(result);
+        // EmailController.addLogistics(result);
 
         return res.status(200).json({status: '200 OK'});
     } catch (error) {
