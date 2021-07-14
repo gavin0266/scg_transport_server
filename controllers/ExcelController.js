@@ -84,16 +84,18 @@ module.exports = {
 
                 if (booking.logistic) {
 
+                    const { logisticProvider } = booking.logistic;
+
                     booking.tickets.forEach((ticket) => {
                         if(ticket.filled) {
                             ws.cell(rowIndex, 1).date(completedAt).style(contentStyle);
                             ws.cell(rowIndex, 2).string(completedAt.toLocaleString('th', { month: 'long' })).style(contentStyle);
                             ws.cell(rowIndex, 3).number(completedAt.getFullYear()).style(contentStyle);
-                            ws.cell(rowIndex, 4).string(customer.name).style(contentStyle);
-                            ws.cell(rowIndex, 5).string(ticket.receiptId).style(contentStyle);
+                            ws.cell(rowIndex, 4).string(customer ? customer.name : "-").style(contentStyle);
+                            ws.cell(rowIndex, 5).string(ticket ? ticket.receiptId : "-").style(contentStyle);
                             ws.cell(rowIndex, 6).string(productType).style(contentStyle);
-                            ws.cell(rowIndex, 7).string(ticket.vehicleId).style(contentStyle);
-                            ws.cell(rowIndex, 8).string(booking.logistic.logisticProvider.name).style(contentStyle);
+                            ws.cell(rowIndex, 7).string(ticket ? ticket.vehicleId : "-").style(contentStyle);
+                            ws.cell(rowIndex, 8).string(logisticProvider ? logisticProvider.name : "-").style(contentStyle);
                             ws.cell(rowIndex, 9).number(parseFloat(ticket.weight)).style({numberFormat: '#,##0.00; (#,##0.00); -',}).style(contentStyle);
                             
                             rowIndex++;
