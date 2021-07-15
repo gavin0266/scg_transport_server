@@ -153,7 +153,7 @@ module.exports = {
                 const { vehicleId, weight } = ticket;
                 const { transportDate } = booking;
 
-                console.log(vehicleId, weight, transportDate, transportDate.getDate());
+                // console.log(vehicleId, weight, transportDate, transportDate.getDate());
 
                 if(!vehicleMap.hasOwnProperty(vehicleId)){
                     vehicleMap[vehicleId] = new Array(new Date(year, month+1, 0).getDate()).fill(0);

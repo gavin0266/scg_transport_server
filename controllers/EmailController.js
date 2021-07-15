@@ -8,6 +8,12 @@ const axios = require('axios');
 const engineerEmail = "gavin.kiwi@gmail.com";
 const adminEmail = "scg.af.logistics@gmail.com"
 
+function toShortDate(date, format = "dd/mm/yyyy") {
+    var dateFormat = require('dateformat');
+
+    return dateFormat(date, format);
+}
+
 const getRecipients = async (roles) => {
     const access = await getAuth0AccessToken();
     console.log(access);
@@ -32,9 +38,7 @@ const getRecipients = async (roles) => {
 }
 
 module.exports = {
-    addBooking: async (booking) => {
-        // console.log(booking);
-        
+    addBooking: async (booking) => {        
         try {
             const adminRecipients = await getRecipients('admin');
             const engineerRecipients = await getRecipients('engineer');
@@ -57,7 +61,6 @@ module.exports = {
     },
 
     addLogistics: async (booking) => {
-        // console.log(booking);
         try {
             const adminRecipients = await getRecipients('admin');
             const engineerRecipients = await getRecipients('engineer');
@@ -75,17 +78,31 @@ module.exports = {
             const body = `<div>
                                 Order #${booking.bookingId} ได้รับรายละเอียดการขนส่ง <br /><br />
 
-                                <a href="${approveUrl}/1">อนุมัติ</a> | <a href="${approveUrl}/0">ปฏิเสธ</a>
+                                <a href="${approveUrl}/1">อนุมัติ</a> | <a href="${approveUrl}/0">ปฏิเสธ</a><br />
 
-                                <br /><br />
+                                <br />
 
-                                บริษัทขนส่ง: ${booking.logistic.logisticProvider.name}<br />
-                                ที่รับสินค้า: ${booking.logistic.location}<br />
-                                ชนิดรถขนส่ง: ${booking.logistic.vehicleType}<br />
-                                ค่าขนส่ง (บาท): ${booking.logistic.price}<br />
-                                นน.สุทธิโดยประมาณ (ตัน): ${booking.logistic.estimatedAmount}<br /> 
+                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทลูกค้า: ${booking?.customer?.name}<br />
+                                ประเภทสินค้า: ${booking?.productType}<br />
+                                สถานะ: ${booking?.status}<br />
+                                วันที่จองรถ: ${toShortDate(booking?.bookingDate)}<br />
+                                วันที่ขนส่่ง: ${toShortDate(booking?.transportDate)}<br />   
+                                จำนวนเที่ยว: ${booking?.repeat}<br />
+                                Remarks: ${booking?.remarks}<br />
+                                Created By: ${booking?.addedBy?.order.email}<br />
+
+                                <br />
+
+                                บริษัทขนส่ง: ${booking?.logistic?.logisticProvider?.name}<br />
+                                ที่รับสินค้า: ${booking?.logistic?.location}<br />
+                                ชนิดรถขนส่ง: ${booking?.logistic?.vehicleType}<br />
+                                ค่าขนส่ง (บาท): ${booking?.logistic?.price}<br />
+                                นน.สุทธิโดยประมาณ (ตัน): ${booking?.logistic?.estimatedAmount}<br /> 
+                                
                                 <br /> 
-                                ข้อมูลเพิ่มเติม: ${url}
+                                
+                                ข้อมูลเพิ่มเติม: ${url}<br />
                          </div>`
 
             EmailService.sendEmail(recipients, subjects, body);
@@ -110,9 +127,36 @@ module.exports = {
 
             const approveText = booking.status == "Approved" ? "อนุมัติ" : "ปฏิเสธ";
 
-            const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  ได้รับการ${approveText}`
+            const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} - ได้รับการ${approveText}`
 
-            const body = `<div>Order #${booking.bookingId} ได้รับการ${approveText} <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
+            const body = `<div>
+                                Order #${booking.bookingId} ได้รับการ${approveText} <br />
+
+                                <br />
+
+                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทลูกค้า: ${booking?.customer?.name}<br />
+                                ประเภทสินค้า: ${booking?.productType}<br />
+                                สถานะ: ${booking?.status}<br />
+                                วันที่จองรถ: ${toShortDate(booking?.bookingDate)}<br />
+                                วันที่ขนส่่ง: ${toShortDate(booking?.transportDate)}<br />   
+                                จำนวนเที่ยว: ${booking?.repeat}<br />
+                                Remarks: ${booking?.remarks}<br />
+                                Created By: ${booking?.addedBy?.order.email}<br />
+
+                                <br />
+
+                                บริษัทขนส่ง: ${booking?.logistic?.logisticProvider?.name}<br />
+                                ที่รับสินค้า: ${booking?.logistic?.location}<br />
+                                ชนิดรถขนส่ง: ${booking?.logistic?.vehicleType}<br />
+                                ค่าขนส่ง (บาท): ${booking?.logistic?.price}<br />
+                                นน.สุทธิโดยประมาณ (ตัน): ${booking?.logistic?.estimatedAmount}<br /> 
+                                
+                                <br /> 
+                                
+                                ข้อมูลเพิ่มเติม: ${url}<br />
+                         </div>
+                         `
 
             EmailService.sendEmail(recipients, subjects, body);
         } catch (e) {
@@ -138,7 +182,34 @@ module.exports = {
 
             const subjects = `SCG-AF-LOGISTICS: ORDER #${booking.bookingId} -  COMPLETED`
 
-            const body = `<div>Order #${booking.bookingId} ได้รับการปิดงาน <br /> ข้อมูลเพิ่มเติม: ${url}</div>`
+            const body = `<div>
+                                Order #${booking.bookingId}  ได้รับการปิดงาน <br />
+
+                                <br />
+
+                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทลูกค้า: ${booking?.customer?.name}<br />
+                                ประเภทสินค้า: ${booking?.productType}<br />
+                                สถานะ: ${booking?.status}<br />
+                                วันที่จองรถ: ${toShortDate(booking?.bookingDate)}<br />
+                                วันที่ขนส่่ง: ${toShortDate(booking?.transportDate)}<br />   
+                                จำนวนเที่ยว: ${booking?.repeat}<br />
+                                Remarks: ${booking?.remarks}<br />
+                                Created By: ${booking?.addedBy?.order.email}<br />
+
+                                <br />
+
+                                บริษัทขนส่ง: ${booking?.logistic?.logisticProvider?.name}<br />
+                                ที่รับสินค้า: ${booking?.logistic?.location}<br />
+                                ชนิดรถขนส่ง: ${booking?.logistic?.vehicleType}<br />
+                                ค่าขนส่ง (บาท): ${booking?.logistic?.price}<br />
+                                นน.สุทธิโดยประมาณ (ตัน): ${booking?.logistic?.estimatedAmount}<br /> 
+                                
+                                <br /> 
+                                
+                                ข้อมูลเพิ่มเติม: ${url}<br />
+                         </div>
+                         `
 
             EmailService.sendEmail(recipients, subjects, body);
         } catch (e) {
