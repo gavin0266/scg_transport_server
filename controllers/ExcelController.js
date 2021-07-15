@@ -1,6 +1,9 @@
 var xl = require('excel4node');
 const BookingService = require('../services/BookingService');
 
+const { DateTime } = require("luxon");
+
+
 function toShortDate(date) {
     var dateFormat = require('dateformat');
 
@@ -88,7 +91,11 @@ module.exports = {
 
                     booking.tickets.forEach((ticket) => {
                         if(ticket.filled) {
-                            ws.cell(rowIndex, 1).date(completedAt).style(contentStyle);
+                            const localCompletedAt = DateTime.fromISO(completedAt.toISOString()).setZone('Asia/Bangkok');
+
+                            let { c } = localCompletedAt;
+
+                            ws.cell(rowIndex, 1).date(Date.UTC(c.year, c.month-1, c.day, c.hour, c.minute, c.second, c.millisecond)).style({...contentStyle, numberFormat: 'dd/MM/yy'});
                             ws.cell(rowIndex, 2).string(completedAt.toLocaleString('th', { month: 'long' })).style(contentStyle);
                             ws.cell(rowIndex, 3).number(completedAt.getFullYear()).style(contentStyle);
                             ws.cell(rowIndex, 4).string(customer ? customer.name : "-").style(contentStyle);
