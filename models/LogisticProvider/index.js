@@ -5,4 +5,4 @@ const { Schema } = mongoose;
 
 const logisticProviderSchema = require('./schema');
 
-module.exports = Logistic = mongoose.model('LogisticProvider', logisticProviderSchema);
+module.exports = LogisticProvider = mongoose.model('LogisticProvider', logisticProviderSchema);

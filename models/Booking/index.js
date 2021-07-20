@@ -11,6 +11,9 @@ const customerSchema = require('../Customer/schema');
 const logisticsSchema = require('../Logistic/schema');
 
 const scaleSchema = require('../Scale/schema');
+
+const sourceSchema = require('../Source/schema');
+
 const Scale = require('../Scale');
 
 const userSchema = new Schema({
@@ -55,7 +58,7 @@ const bookingSchema = new Schema({
         required: true
     },
     source: {
-        type: String,
+        type: sourceSchema,
         default: () => null,
         required: false,
     },

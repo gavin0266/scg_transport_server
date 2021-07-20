@@ -58,23 +58,25 @@ module.exports = {
         
 
         ws.cell(1, 1).string("วัน/เดือน/ปี").style(headerStyle);
-        ws.column(1).setWidth(30);
+        ws.column(1).setWidth(15);
         ws.cell(1, 2).string("เดือน").style(headerStyle);
         ws.column(2).setWidth(15);
         ws.cell(1, 3).string("ปี").style(headerStyle);
-        ws.column(3).setWidth(20);
+        ws.column(3).setWidth(15);
         ws.cell(1, 4).string("ชื่อลูกค้า (นิติบุคคล/บุคคล)").style(headerStyle);
-        ws.column(4).setWidth(40);
+        ws.column(4).setWidth(50);
         ws.cell(1, 5).string("เลขที่ใบชั่ง").style(headerStyle);
         ws.column(5).setWidth(15);
         ws.cell(1, 6).string("ประเภทสินค้า").style(headerStyle);
         ws.column(6).setWidth(15);
         ws.cell(1, 7).string("ทะเบียนรถ").style(headerStyle);
         ws.column(7).setWidth(15);
-        ws.cell(1, 8).string("ซัพพลายเออร์").style(headerStyle);
+        ws.cell(1, 8).string("บริษัทขนส่ง").style(headerStyle);
         ws.column(8).setWidth(18)
-        ws.cell(1, 9).string("นน.สุทธิปลายทาง (ตัน)").style(headerStyle);
+        ws.cell(1, 9).string("บริษัทต้นทาง").style(headerStyle);
         ws.column(9).setWidth(18)
+        ws.cell(1, 10).string("นน.สุทธิปลายทาง (ตัน)").style(headerStyle);
+        ws.column(10).setWidth(18)
 
         const bookings = await BookingService.getBookingsByCompletedDate(startDate, endDate);
 
@@ -83,7 +85,7 @@ module.exports = {
 
             bookings.forEach((booking) => {
 
-                const {completedAt, customer, productType} = booking;
+                const {completedAt, customer, productType, source } = booking;
 
                 if (booking.logistic) {
 
@@ -103,7 +105,8 @@ module.exports = {
                             ws.cell(rowIndex, 6).string(productType).style(contentStyle);
                             ws.cell(rowIndex, 7).string(ticket ? ticket.vehicleId : "-").style(contentStyle);
                             ws.cell(rowIndex, 8).string(logisticProvider ? logisticProvider.name : "-").style(contentStyle);
-                            ws.cell(rowIndex, 9).number(parseFloat(ticket.weight)).style({numberFormat: '#,##0.00; (#,##0.00); -',}).style(contentStyle);
+                            ws.cell(rowIndex, 9).string(source?.name ? source.name : "-").style(contentStyle);
+                            ws.cell(rowIndex, 10).number(parseFloat(ticket.weight)).style({numberFormat: '#,##0.00; (#,##0.00); -',}).style(contentStyle);
                             
                             rowIndex++;
                         }
@@ -121,6 +124,7 @@ module.exports = {
             ws.cell(rowIndex, 7).style({border: {top: {style: 'thin', color: "#000000"}}});
             ws.cell(rowIndex, 8).style({border: {top: {style: 'thin', color: "#000000"}}});
             ws.cell(rowIndex, 9).style({border: {top: {style: 'thin', color: "#000000"}}});
+            ws.cell(rowIndex, 10).style({border: {top: {style: 'thin', color: "#000000"}}});
         }
 
     },

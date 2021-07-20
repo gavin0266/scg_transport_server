@@ -6,7 +6,7 @@ const { zonedTimeToUtc } = require('date-fns-tz');
 
 
 module.exports = {
-    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks) => {
+    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, sourceId, location, vehicleType, link, fileURL, remarks) => {
 
         const defaultTicket = () => ({
             receiptId   : null,
@@ -29,7 +29,7 @@ module.exports = {
             vehicleType,
         }
 
-        return BookingService.addBooking(addedBy, customerId, productType, bookingDateObj, transportDateObj, repeat, tickets, source, link, fileURL, remarks, logistic);
+        return BookingService.addBooking(addedBy, customerId, productType, bookingDateObj, transportDateObj, repeat, tickets, sourceId, link, fileURL, remarks, logistic);
     },
 
     approveBooking: async (bookingId, isApprove) => {
@@ -77,14 +77,23 @@ module.exports = {
     addCustomer: async (name) => {
         return BookingService.addCustomer(name);
     },
+    addSource: async (name) => {
+        return BookingService.addSource(name);
+    },
     getAllCustomers: async () => {
         return BookingService.getAllCustomers();
+    },
+    getAllSources: async () => {
+        return BookingService.getAllSources();
     },
     addScaleToBooking: async (bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate) => {
         return BookingService.addScaleToBooking(bookingId, ticketIndex, receiptId, vehicleId, weight, image, transportDate);
     },
     getBookingTicketsById: async (id) => {
         return BookingService.getBookingTicketsById(id);
+    },
+    updateSourceInBookings: async () => {
+        return BookingService.updateSourceInBookings();
     },
     getNewAnalyticsData: async (year, month) => {
         var firstDay = new Date(year, month, 1);
@@ -100,11 +109,13 @@ module.exports = {
 
             data.map(booking => {
                 const { source, customer } = booking;
+
+                const sourceName = source?.name
                 
-                if(!routes.hasOwnProperty(source)) {
-                    routes[source] = new Set();
+                if(!routes.hasOwnProperty(sourceName)) {
+                    routes[sourceName] = new Set();
                 }
-                routes[source].add(customer.name);
+                routes[sourceName].add(customer.name);
             });
 
             Object.keys(routes).map(function(key, index) {
@@ -129,7 +140,7 @@ module.exports = {
         function getSourceFrequency(data) {
             const destinations = data.map(booking => {
                 if(booking.logistic) {
-                    return booking.source
+                    return booking.source?.name
                 }
             });
 

@@ -7,15 +7,17 @@ const Logistic = require('../models/Logistic');
 const LogisticProvider = require('../models/LogisticProvider');
 const Customer = require('../models/Customer');
 const Scale = require('../models/Scale');
+const Source = require('../models/Source');
 
 const { zonedTimeToUtc } = require('date-fns-tz');
 
 
 
 module.exports = {
-    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, tickets, source, link, fileURL, remarks, logistic) => {
+    addBooking: async (addedBy, customerId, productType, bookingDate, transportDate, repeat, tickets, sourceId, link, fileURL, remarks, logistic) => {
 
-        const customer = await Customer.findOne( { customerId: customerId } ) 
+        const customer = await Customer.findOne( { customerId: customerId } )
+        const source = await Source.findOne( { sourceId: sourceId } ) 
 
         const booking = new Booking({
             customer: customer,
@@ -140,6 +142,12 @@ module.exports = {
         return query.lean().exec();
     },
 
+    addSource: async (name) => {
+        const source = new Source({ name: name })
+
+        return await source.save();
+    },
+
     addCustomer: async (name) => {
         const customer = new Customer({ name: name })
 
@@ -147,7 +155,12 @@ module.exports = {
     },
 
     getAllCustomers: async () => {
-        var query = Customer.find();
+        var query = Customer.find({});
+        return query;
+    },
+
+    getAllSources: async () => {
+        var query = Source.find({});
         return query;
     },
 
@@ -173,5 +186,25 @@ module.exports = {
     getBookingTicketsById: async (id) => {
         var query = await Booking.findOne({ bookingId: id });
         return query.tickets;
+    },
+ 
+    updateSourceInBookings: async () => {
+        var bookings = await Booking.find({});
+
+        return await Promise.all(bookings.map(async (booking) => {
+            // console.log(typeof booking.source, booking.source);
+            if (typeof booking.source === "string" && booking.source != "") {
+                console.log(booking.source);
+                var sourceObj = await Source.findOne({name: booking.source});
+                if(!sourceObj) {
+                    sourceObj = new Source({name: booking.source});
+                    await sourceObj.save();
+                }
+
+                booking.source = sourceObj;
+                return booking.save();
+            }
+
+        }));
     },
 }

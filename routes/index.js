@@ -18,14 +18,14 @@ router.get('/', function(req, res, next) {
 
 router.post('/addBooking', authenticated, async (req, res, next) => {
     try {
-        const { customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks } = req.body;
+        const { customerId, productType, bookingDate, transportDate, repeat, sourceId, location, vehicleType, link, fileURL, remarks } = req.body;
         
         const addedBy = {
             email: getUserEmail(req.user),
             userId: req.user.sub
         }
 
-        const booking = await BookingController.addBooking(addedBy, customerId, productType, bookingDate, transportDate, repeat, source, location, vehicleType, link, fileURL, remarks);
+        const booking = await BookingController.addBooking(addedBy, customerId, productType, bookingDate, transportDate, repeat, sourceId, location, vehicleType, link, fileURL, remarks);
 
         EmailController.addBooking(booking);
 
@@ -53,7 +53,7 @@ router.post('/booking/approve', authenticated, async (req, res, next) => {
     }
 });
 
-router.get('/bookings', authenticated, async (req, res, next) => {
+router.get('/bookings', async (req, res, next) => {
     try {
         if(req.query.hasOwnProperty("startDate") && req.query.hasOwnProperty("endDate")) {
             const { startDate, endDate } = req.query;
@@ -170,13 +170,44 @@ router.post('/addLogistic', async (req, res, next) => {
 
 router.post('/logistic/provider/add', authenticated, async (req, res, next) => {
     try {
-
-        if(!checkRole(req.user, ['admin', 'engineer'])) return res.sendStatus(401);
-
         const { name } = req.body;
         const result = await BookingController.addLogisticProvider(name);
 
         return res.status(200).json({status: '200 OK'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+router.post('/source/add', authenticated, async (req, res, next) => {
+    try {
+        const { name } = req.body;
+        const result = await BookingController.addSource(name);
+
+        return res.status(200).json({status: '200 OK'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+router.post('/source/modifyAll', async (req, res, next) => {
+    try {
+        const result = await BookingController.updateSourceInBookings();
+
+        return res.status(200).json({status: '200 OK'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+router.get('/sources', async (req, res, next) => {
+    try {
+        const result = await BookingController.getAllSources();
+
+        return res.status(200).json(result);
     } catch (error) {
         console.log(error);
         return res.status(500).json(error);

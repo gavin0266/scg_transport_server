@@ -9,7 +9,7 @@ scg_transport_server:
     - "9000:9000"
   environment:
     - TZ=Asia/Bangkok
-    - DEBUG=true
+    - DEBUG=false
     - FRONTEND=http://localhost:3001
     - DEBUG_MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/debugDatabase?retryWrites=true&w=majority
     - MONGO_URI=mongodb+srv://dev:Cmcl1ccicqI8XraI@cluster0.zy4m3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
