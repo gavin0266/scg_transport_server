@@ -58,7 +58,7 @@ const bookingSchema = new Schema({
         required: true
     },
     source: {
-        type: sourceSchema,
+        type: Object,
         default: () => null,
         required: false,
     },

@@ -78,28 +78,27 @@ module.exports = {
         ws.cell(1, 10).string("นน.สุทธิปลายทาง (ตัน)").style(headerStyle);
         ws.column(10).setWidth(18)
 
-        const bookings = await BookingService.getBookingsByCompletedDate(startDate, endDate);
+        const bookings = await BookingService.getCompletedBookingsByTransportDate(startDate, endDate, {'transportDate': 1});
 
         if (bookings) {
             var rowIndex = 2;
 
             bookings.forEach((booking) => {
 
-                const {completedAt, customer, productType, source } = booking;
-
+                const {completedAt, customer, productType, source, transportDate } = booking;
                 if (booking.logistic) {
 
                     const { logisticProvider } = booking.logistic;
 
                     booking.tickets.forEach((ticket) => {
                         if(ticket.filled) {
-                            const localCompletedAt = DateTime.fromISO(completedAt.toISOString()).setZone('Asia/Bangkok');
+                            const localTransportDate = DateTime.fromISO(transportDate.toISOString()).setZone('Asia/Bangkok');
 
-                            let { c } = localCompletedAt;
+                            let { c } = localTransportDate;
 
-                            ws.cell(rowIndex, 1).date(Date.UTC(c.year, c.month-1, c.day, c.hour, c.minute, c.second, c.millisecond)).style({...contentStyle, numberFormat: 'dd/MM/yy'});
-                            ws.cell(rowIndex, 2).string(completedAt.toLocaleString('th', { month: 'long' })).style(contentStyle);
-                            ws.cell(rowIndex, 3).number(completedAt.getFullYear()).style(contentStyle);
+                            ws.cell(rowIndex, 1).date(Date.UTC(c.year, c.month-1, c.day)).style({...contentStyle, numberFormat: 'dd/MM/yy'});
+                            ws.cell(rowIndex, 2).string(transportDate.toLocaleString('th', { month: 'long' })).style(contentStyle);
+                            ws.cell(rowIndex, 3).number(transportDate.getFullYear()).style(contentStyle);
                             ws.cell(rowIndex, 4).string(customer ? customer.name : "-").style(contentStyle);
                             ws.cell(rowIndex, 5).string(ticket ? ticket.receiptId : "-").style(contentStyle);
                             ws.cell(rowIndex, 6).string(productType).style(contentStyle);

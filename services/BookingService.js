@@ -42,7 +42,7 @@ module.exports = {
         return query;
     },
 
-    getBookingsByTransportDate: async (startDate, endDate) => {
+    getBookingsByTransportDate: async (startDate, endDate, sorter = null) => {
 
         
 
@@ -53,12 +53,28 @@ module.exports = {
                     $lte: endOfDay(new Date(endDate))
                 } 
             }
-        );
+        ).sort(sorter);
         
         return query;
     },
 
-    getBookingsByCompletedDate: async (startDate, endDate) => {
+    getCompletedBookingsByTransportDate: async (startDate, endDate, sorter = null) => {
+
+        var query = Booking.find(
+            { 
+                transportDate: {
+                    $gte: startOfDay(new Date(startDate)),
+                    $lte: endOfDay(new Date(endDate))
+                },
+                status: 'Completed', 
+            }
+        )
+        .sort(sorter);
+        
+        return query;
+    },
+
+    getBookingsByCompletedDate: async (startDate, endDate, sorter = null) => {
 
         var query = Booking.find(
             { 
@@ -67,7 +83,8 @@ module.exports = {
                     $lte: new Date(endDate)
                 } 
             }
-        );
+        ).sort(sorter);
+
         return query;
     },
 
@@ -191,20 +208,23 @@ module.exports = {
     updateSourceInBookings: async () => {
         var bookings = await Booking.find({});
 
-        return await Promise.all(bookings.map(async (booking) => {
-            // console.log(typeof booking.source, booking.source);
-            if (typeof booking.source === "string" && booking.source != "") {
-                console.log(booking.source);
-                var sourceObj = await Source.findOne({name: booking.source});
-                if(!sourceObj) {
-                    sourceObj = new Source({name: booking.source});
-                    await sourceObj.save();
-                }
-
-                booking.source = sourceObj;
-                return booking.save();
+        const modifyBooking = async (booking) => {
+            var sourceObj = await Source.findOne({name: booking.source});
+            console.log(sourceObj);
+            if(!sourceObj) {
+                sourceObj = new Source({name: booking.source});
+                await sourceObj.save();
             }
 
-        }));
+            booking.source = sourceObj;
+            return booking.save();
+        }
+
+        for (var i = 0; i < bookings.length; i++) {
+            const result = await modifyBooking(bookings[i]);
+            
+        }
+
+        return;
     },
 }

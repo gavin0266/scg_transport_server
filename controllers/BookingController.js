@@ -97,11 +97,13 @@ module.exports = {
     },
     getNewAnalyticsData: async (year, month) => {
         var firstDay = new Date(year, month, 1);
-        var lastDay = new Date(year, month+1, 1);
+        var lastDay = new Date(year, month+1, 1) -1;
 
-        const data = await BookingService.getBookingsByCompletedDate(firstDay, lastDay);
+        const data = await BookingService.getCompletedBookingsByTransportDate(firstDay, lastDay, {transportDate: 1});
 
-        const yearlyData = await BookingService.getBookingsByCompletedDate(new Date(year, 0, 1), new Date(year, 12, 1));
+        console.log(data[0]);
+
+        const yearlyData = await BookingService.getCompletedBookingsByTransportDate(new Date(year, 0, 1), new Date(year, 12, 1));
 
         function getUniqueRoutes(data) {
             var routes = {}
