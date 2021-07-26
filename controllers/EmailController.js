@@ -82,7 +82,7 @@ module.exports = {
 
                                 <br />
 
-                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทต้นทาง: ${booking?.source?.name}<br />
                                 บริษัทลูกค้า: ${booking?.customer?.name}<br />
                                 ประเภทสินค้า: ${booking?.productType}<br />
                                 สถานะ: ${booking?.status}<br />
@@ -134,7 +134,7 @@ module.exports = {
 
                                 <br />
 
-                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทต้นทาง: ${booking?.source?.name}<br />
                                 บริษัทลูกค้า: ${booking?.customer?.name}<br />
                                 ประเภทสินค้า: ${booking?.productType}<br />
                                 สถานะ: ${booking?.status}<br />
@@ -187,7 +187,7 @@ module.exports = {
 
                                 <br />
 
-                                บริษัทต้นทาง: ${booking?.source}<br />
+                                บริษัทต้นทาง: ${booking?.source?.name}<br />
                                 บริษัทลูกค้า: ${booking?.customer?.name}<br />
                                 ประเภทสินค้า: ${booking?.productType}<br />
                                 สถานะ: ${booking?.status}<br />
